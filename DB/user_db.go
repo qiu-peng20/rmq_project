@@ -47,16 +47,19 @@ func (u *UserManager) Select(userName string) (user *model.User, err error) {
 	}
 	s := fmt.Sprintf("SELECT * FROM %v WHERE userName=?", u.table)
 	rows, err := u.db.Query(s, userName)
+	defer rows.Close()
 	if err != nil {
 		return &model.User{}, err
 	}
-	result := common.GetResultRow(rows)
-	if len(result) == 0 {
+	columns, _ := rows.Columns()
+	if len(columns) == 0 {
 		return &model.User{}, errors.New("用户不存在")
 	}
+	for _ , v := range columns{
+		fmt.Print(v)
+	}
 	user = &model.User{}
-	common.DataToStructByTagSql(result, user)
-	return
+	return user, nil
 }
 
 func (u *UserManager) Insert(user *model.User) (id int64, err error) {

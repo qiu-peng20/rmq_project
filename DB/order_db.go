@@ -10,7 +10,6 @@ import (
 type OrderInterface interface {
 	Conn() error
 	Insert(order *model.Order) (int64, error)
-	SelectByAll() ([]*model.Order, error)
 }
 
 type OrderStruct struct {
@@ -41,9 +40,9 @@ func (o *OrderStruct) Conn() (err error) {
 }
 
 func (o OrderStruct) Insert(order *model.Order) (id int64, err error) {
-	if err := o.Conn(); err != nil {
+	if err = o.Conn(); err != nil {
 		fmt.Print(err)
-		return
+		return id, err
 	}
 	s := fmt.Sprintf("INSERT %v SET userId=?, productId=?, orderStatus=?",o.table)
 	stmt, err := o.db.Prepare(s)
@@ -56,8 +55,4 @@ func (o OrderStruct) Insert(order *model.Order) (id int64, err error) {
 		return id,err
 	}
 	return result.LastInsertId()
-}
-
-func (o OrderStruct) SelectByAll() ([]*model.Order, error) {
-
 }

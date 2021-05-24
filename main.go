@@ -5,10 +5,8 @@ import (
 	"RMQ_Project/common"
 	"RMQ_Project/service"
 	"RMQ_Project/web/controller"
-	"context"
 	"fmt"
 	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/mvc"
 )
 
 func main() {
@@ -28,22 +26,27 @@ func main() {
 		fmt.Print(err)
 	}
 	// 注册上下文
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	//ctx, cancel := context.WithCancel(context.Background())
+	//defer cancel()
 
 	//5 注册控制器
 	productRepository := DB.NewProductManager("product", db)
 	productService := service.NewProductService(productRepository)
-	productParty := app.Party("/product")
-	product := mvc.New(productParty)
-	product.Register(ctx, productService)
-	product.Handle(new(controller.ProductController))
+	p  := new(controller.ProductController)
+	p.ProductServiceInterface = productService
+	app.Post("/product", p.PostAdd)
+	//productParty := app.Party("/product")
+	//product := mvc.New(productParty)
+	//product.Register(ctx, productService)
+	//product.Handle(new(controller.ProductController))
 
 	// 注册用户控制器
 	userRepository := DB.NewUserInterface("user", db)
-	_ = service.NewUserService(userRepository)
+	userInterface := service.NewUserService(userRepository)
 	u := new(controller.UserController)
-	app.Post("/user",u.PostRegister)
+	u.Service = userInterface
+	app.Post("/user/sign", u.PostRegister)
+	app.Post("/user/login", u.PostLogin)
 	
 	//6 启动服务
 	_ = app.Run(iris.Addr("localhost:8080"))

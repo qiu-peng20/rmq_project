@@ -7,7 +7,6 @@ import (
 
 type OrderServiceInterface interface {
 	InsertOrder(order *model.Order) (int64,error)
-	SelectAllOrder() ([]*model.Order, error)
 }
 
 type OrderService struct {
@@ -20,8 +19,4 @@ func NewOrderService(orderInterface DB.OrderInterface) OrderServiceInterface {
 
 func (o OrderService)InsertOrder(order *model.Order) (int64, error) {
 	return o.Insert(order)
-}
-
-func (o OrderService)SelectAllOrder() ([]*model.Order,error) {
-	return o.SelectByAll()
 }

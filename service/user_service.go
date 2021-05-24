@@ -4,6 +4,7 @@ import (
 	"RMQ_Project/DB"
 	"RMQ_Project/model"
 	"errors"
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -26,6 +27,7 @@ func (u UserService)AddUser(user *model.User)(id int64, err error)  {
 		return id,err
 	}
 	user.HashPassword = string(bytePwd)
+	fmt.Print(user)
 	return u.Insert(user)
 }
 
@@ -36,13 +38,15 @@ func GeneratePassword(password string) ([]byte, error) {
 func (u UserService)IsSuccess(userName string, password string)(user *model.User, ok bool)  {
 	user , err := u.UserInterface.Select(userName)
 	if err != nil {
-		return
+		fmt.Print(err)
+		return &model.User{}, false
 	}
 	ok,_ = ValidatePassword(password, user.HashPassword)
 	if !ok {
+		fmt.Print(ok)
 		return &model.User{}, ok
 	}
-	return 
+	return user, true
 }
 
 func ValidatePassword(pwd, password string) (ok bool, err error) {
