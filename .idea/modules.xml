@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/rmq_project.iml" filepath="$PROJECT_DIR$/.idea/rmq_project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/..//rmq_project/../../RMQ_Project/.idea/rmq_project.iml" filepath="$PROJECT_DIR$/..//rmq_project/../../RMQ_Project/.idea/rmq_project.iml" />
     </modules>
   </component>
 </project>

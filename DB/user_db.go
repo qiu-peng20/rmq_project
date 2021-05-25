@@ -42,23 +42,25 @@ func (u *UserManager) Select(userName string) (user *model.User, err error) {
 	if userName == "" {
 		return &model.User{}, errors.New("搜索条件不能为空")
 	}
-	if err := u.Conn(); err != nil {
+	if err = u.Conn(); err != nil {
 		return &model.User{}, err
 	}
-	s := fmt.Sprintf("SELECT * FROM %v WHERE userName=?", u.table)
-	rows, err := u.db.Query(s, userName)
-	defer rows.Close()
+	s := fmt.Sprintf("SELECT * FROM %v WHERE userName=? LIMIT 1", u.table)
+	stmt, err := u.db.Prepare(s)
 	if err != nil {
 		return &model.User{}, err
 	}
-	columns, _ := rows.Columns()
-	if len(columns) == 0 {
-		return &model.User{}, errors.New("用户不存在")
-	}
-	for _ , v := range columns{
-		fmt.Print(v)
-	}
+	defer stmt.Close()
 	user = &model.User{}
+	err = stmt.QueryRow(userName).Scan(&user.ID, &user.UserName, &user.HashPassword)
+	if err != nil {
+		fmt.Printf("this is scan error %v",err)
+		return user, err
+	}
+	if user.HashPassword == "" {
+		fmt.Print("没有这个用户")
+		return user, err
+	}
 	return user, nil
 }
 
